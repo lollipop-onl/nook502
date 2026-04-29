@@ -69,9 +69,10 @@ const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(lineMessage)}
             </div>
             {photos.length > 1 && (
               <div class="thumbs">
-                {photos.map((_p, i) => (
+                {photos.map((p, i) => (
                   <a class="thumb" href={`#photo-${i + 1}`} aria-label={`写真${i + 1}枚目を表示`}>
-                    {i + 1}
+                    <img src={imageUrl(p.r2_key)} alt="" loading="lazy" decoding="async" />
+                    <span class="thumb-index" aria-hidden="true">{i + 1}</span>
                   </a>
                 ))}
               </div>
@@ -195,13 +196,24 @@ const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(lineMessage)}
 
   .thumbs {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     margin-top: 8px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0;
+    scrollbar-width: none;
+    padding: 2px;
+    margin-inline: -2px;
+  }
+  .thumbs::-webkit-scrollbar {
+    display: none;
   }
 
   .thumb {
-    flex: 1;
+    flex: 0 0 72px;
     aspect-ratio: 1 / 1;
+    scroll-snap-align: start;
+    position: relative;
     background-color: var(--color-paper-deep);
     background-image: repeating-linear-gradient(
       45deg,
@@ -212,11 +224,32 @@ const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(lineMessage)}
     border-radius: 6px;
     text-decoration: none;
     color: var(--color-ink);
-    font-size: 11px;
+    overflow: hidden;
+    display: block;
+  }
+
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .thumb-index {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: 10px;
     font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    line-height: 18px;
+    text-align: center;
+    background: var(--color-card);
+    color: var(--color-ink);
+    border: 1.2px solid var(--color-ink);
+    border-radius: 999px;
   }
 
   .thumb:focus-visible,
