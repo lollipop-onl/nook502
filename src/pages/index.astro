@@ -1,4 +1,7 @@
 ---
+import { Cloud, Rocket, Sparkles } from "@lucide/astro";
+import "../styles/global.css";
+
 const greeting = "Hello, Astro on Cloudflare Workers!";
 ---
 
@@ -8,10 +11,29 @@ const greeting = "Hello, Astro on Cloudflare Workers!";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>nook502</title>
   </head>
-  <body>
-    <main>
-      <h1>{greeting}</h1>
-      <p>Powered by Astro + Cloudflare Workers + Biome + Lefthook.</p>
+  <body class="min-h-dvh bg-slate-50 text-slate-900 antialiased">
+    <main class="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-16">
+      <h1 class="flex items-center gap-3 text-3xl font-bold tracking-tight">
+        <Sparkles class="size-8 text-amber-500" aria-hidden="true" />
+        {greeting}
+      </h1>
+      <p class="text-base text-slate-600">
+        Powered by Astro + Cloudflare Workers + Biome + Lefthook.
+      </p>
+      <ul class="grid gap-3 text-sm text-slate-700">
+        <li class="flex items-center gap-2">
+          <Rocket class="size-4 text-sky-600" aria-hidden="true" />
+          Tailwind CSS v4 (Vite plugin)
+        </li>
+        <li class="flex items-center gap-2">
+          <Cloud class="size-4 text-sky-600" aria-hidden="true" />
+          Lightning CSS transformer + minifier
+        </li>
+        <li class="flex items-center gap-2">
+          <Sparkles class="size-4 text-sky-600" aria-hidden="true" />
+          Lucide Astro icons
+        </li>
+      </ul>
     </main>
   </body>
 </html>
