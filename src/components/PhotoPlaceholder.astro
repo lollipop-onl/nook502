@@ -5,12 +5,13 @@ interface Props {
   ratio?: string;
   label?: string;
   badge?: string | number;
+  plain?: boolean;
 }
 
-const { ratio = "4 / 3", label, badge } = Astro.props;
+const { ratio = "4 / 3", label, badge, plain = false } = Astro.props;
 ---
 
-<div class="photo bg-stripe" style={`aspect-ratio:${ratio}; --stripe-opacity:0.18; --stripe-color:var(--color-primary); --stripe-size:10px;`}>
+<div class:list={["photo", "bg-stripe", plain && "photo--plain"]} style={`aspect-ratio:${ratio}; --stripe-opacity:0.18; --stripe-color:var(--color-primary); --stripe-size:10px;`}>
   <Camera class="icon" aria-hidden="true" />
   {label && <span class="label">{label}</span>}
   {badge != null && <span class="badge">{badge}</span>}
@@ -29,6 +30,11 @@ const { ratio = "4 / 3", label, badge } = Astro.props;
     gap: 6px;
     color: var(--color-ink-soft);
     position: relative;
+  }
+
+  .photo--plain {
+    border: 0;
+    border-radius: 0;
   }
 
   .icon {

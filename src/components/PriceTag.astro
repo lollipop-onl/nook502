@@ -6,11 +6,21 @@ interface Props {
 
 const { price, size = "md" } = Astro.props;
 const formatted = price.toLocaleString("ja-JP");
+const isFree = price === 0;
+const ariaLabel = isFree ? "価格 無料" : `価格 ¥${formatted}`;
 ---
 
-<div class:list={["price", `price--${size}`]} aria-label={`価格 ¥${formatted}`}>
-  <span class="yen" aria-hidden="true">¥</span>
-  <span class="value">{formatted}</span>
+<div class:list={["price", `price--${size}`, isFree && "price--free"]} aria-label={ariaLabel}>
+  {
+    isFree ? (
+      <span class="free">無料</span>
+    ) : (
+      <>
+        <span class="yen" aria-hidden="true">¥</span>
+        <span class="value">{formatted}</span>
+      </>
+    )
+  }
 </div>
 
 <style>
@@ -18,14 +28,6 @@ const formatted = price.toLocaleString("ja-JP");
     display: inline-flex;
     align-items: baseline;
     gap: 4px;
-    background: var(--color-card);
-    border: 1.6px solid var(--color-ink);
-    border-radius: 8px;
-    background-image: repeating-linear-gradient(
-      45deg,
-      rgb(from var(--color-primary) r g b / 0.08) 0 1.2px,
-      transparent 1.2px 6px
-    );
   }
 
   .yen {
@@ -39,27 +41,27 @@ const formatted = price.toLocaleString("ja-JP");
     letter-spacing: -0.5px;
   }
 
-  .price--md {
-    padding: 4px 8px;
+  .free {
+    font-weight: 900;
+    color: var(--color-primary);
+    letter-spacing: 0.5px;
   }
 
   .price--md .yen {
     font-size: 11px;
   }
 
-  .price--md .value {
+  .price--md .value,
+  .price--md .free {
     font-size: 16px;
-  }
-
-  .price--lg {
-    padding: 8px 12px;
   }
 
   .price--lg .yen {
     font-size: 14px;
   }
 
-  .price--lg .value {
+  .price--lg .value,
+  .price--lg .free {
     font-size: 28px;
   }
 </style>

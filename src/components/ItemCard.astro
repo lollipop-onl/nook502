@@ -24,6 +24,7 @@ const dim = item.status === "sold";
       alt={item.title}
       ratio={hero ? "16 / 10" : "1 / 1"}
       loading={hero ? "eager" : "lazy"}
+      plain
     />
     <div class="status">
       <StatusChip status={item.status} />
@@ -73,6 +74,7 @@ const dim = item.status === "sold";
 
   .photo-wrap {
     position: relative;
+    border-bottom: 1.6px solid var(--color-ink);
   }
 
   .status {

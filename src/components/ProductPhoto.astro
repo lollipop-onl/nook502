@@ -13,19 +13,20 @@ interface Props {
   ratio?: string;
   badge?: string | number;
   loading?: "eager" | "lazy";
+  plain?: boolean;
 }
 
-const { src, alt, ratio = "4 / 3", badge, loading = "lazy" } = Astro.props;
+const { src, alt, ratio = "4 / 3", badge, loading = "lazy", plain = false } = Astro.props;
 ---
 
 {
   src ? (
-    <div class="photo" style={`aspect-ratio:${ratio}`}>
+    <div class:list={["photo", plain && "photo--plain"]} style={`aspect-ratio:${ratio}`}>
       <img src={src} alt={alt} loading={loading} decoding="async" />
       {badge != null && <span class="badge">{badge}</span>}
     </div>
   ) : (
-    <PhotoPlaceholder ratio={ratio} badge={badge} />
+    <PhotoPlaceholder ratio={ratio} badge={badge} plain={plain} />
   )
 }
 
@@ -37,6 +38,11 @@ const { src, alt, ratio = "4 / 3", badge, loading = "lazy" } = Astro.props;
     border-radius: 10px;
     overflow: hidden;
     position: relative;
+  }
+
+  .photo--plain {
+    border: 0;
+    border-radius: 0;
   }
 
   .photo img {
