@@ -29,7 +29,7 @@ if (!product || !isPublicStatus(product.status)) {
 const photos = product.images;
 const hasPhotos = photos.length > 0;
 
-const lineMessage = `[Nook 502] ${product.title} (¥${product.price.toLocaleString("ja-JP")}) について連絡したいです。\n${Astro.url.origin}/items/${product.id}`;
+const copyText = `${product.title}\n${Astro.url.origin}/items/${product.id}`;
 ---
 
 <BaseLayout title={`${product.title} — Nook 502`} description={product.description.slice(0, 120)}>
@@ -109,13 +109,7 @@ const lineMessage = `[Nook 502] ${product.title} (¥${product.price.toLocaleStri
 
     <div slot="footer" class="footer-row">
       <div class="copy-wrap">
-        <PrimaryButton
-          kind="secondary"
-          type="button"
-          icon={Copy}
-          name="copy"
-          data-copy-trigger
-        >
+        <PrimaryButton kind="secondary" type="button" icon={Copy} name="copy">
           情報をコピー
         </PrimaryButton>
         <span class="toast" data-copy-toast>コピー済み</span>
@@ -124,16 +118,22 @@ const lineMessage = `[Nook 502] ${product.title} (¥${product.price.toLocaleStri
     </div>
   </AppShell>
 
-  <script is:inline define:vars={{ message: lineMessage }}>
-    document.querySelector("[data-copy-trigger]")?.addEventListener("click", async () => {
+  <script is:inline define:vars={{ text: copyText }}>
+    const wrap = document.querySelector(".copy-wrap");
+    const button = wrap?.querySelector("button");
+    const toast = wrap?.querySelector("[data-copy-toast]");
+    let hideTimer = 0;
+
+    button?.addEventListener("click", async () => {
       try {
-        await navigator.clipboard.writeText(message);
-        const toast = document.querySelector("[data-copy-toast]");
-        toast?.classList.add("show");
-        setTimeout(() => toast?.classList.remove("show"), 1800);
+        await navigator.clipboard.writeText(text);
       } catch (e) {
         console.error("clipboard write failed", e);
+        return;
       }
+      toast?.classList.add("show");
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => toast?.classList.remove("show"), 1800);
     });
   </script>
 </BaseLayout>
