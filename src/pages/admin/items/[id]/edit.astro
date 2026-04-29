@@ -1,5 +1,5 @@
 ---
-import { Trash2 } from "@lucide/astro";
+import { ExternalLink, Trash2 } from "@lucide/astro";
 import AppShell from "../../../../components/AppShell.astro";
 import ProductForm from "../../../../components/ProductForm.astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
@@ -56,6 +56,17 @@ const errorsWithImage = imageError ? { ...errors, image: imageError } : errors;
 
 <BaseLayout title={`${product.title} を編集 — Nook 502`}>
   <AppShell back backHref="/admin" title="商品を編集">
+    <a
+      slot="header-action"
+      class="view-btn"
+      href={`/items/${id}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="商品ページを新しいタブで開く"
+    >
+      <ExternalLink aria-hidden="true" />
+      公開ページ
+    </a>
     <form
       slot="header-action"
       method="post"
@@ -93,6 +104,7 @@ const errorsWithImage = imageError ? { ...errors, image: imageError } : errors;
     margin: 0;
   }
 
+  .view-btn,
   .del-btn {
     display: inline-flex;
     align-items: center;
@@ -102,11 +114,20 @@ const errorsWithImage = imageError ? { ...errors, image: imageError } : errors;
     cursor: pointer;
     font-size: 12px;
     font-weight: 700;
-    color: var(--color-danger);
     font-family: inherit;
     padding: 0;
+    text-decoration: none;
   }
 
+  .view-btn {
+    color: var(--color-ink);
+  }
+
+  .del-btn {
+    color: var(--color-danger);
+  }
+
+  .view-btn svg,
   .del-btn svg {
     width: 14px;
     height: 14px;

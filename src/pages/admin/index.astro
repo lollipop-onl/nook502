@@ -1,8 +1,7 @@
 ---
-import { Bell, Camera, Plus } from "@lucide/astro";
+import { Camera, Plus } from "@lucide/astro";
 import AppShell from "../../components/AppShell.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import IconButton from "../../components/IconButton.astro";
 import PrimaryButton from "../../components/PrimaryButton.astro";
 import StatusDropdown from "../../components/StatusDropdown.astro";
 import { countByStatus, listProductsWithCover } from "../../lib/products";
@@ -34,8 +33,6 @@ function formatDate(epochSeconds: number): string {
 
 <BaseLayout title="管理ダッシュボード — Nook 502">
   <AppShell>
-    <IconButton slot="header-action" icon={Bell} ariaLabel="通知" />
-
     <!-- Stats header -->
     <div class="stats-block bg-stripe">
       <div class="head-row">
