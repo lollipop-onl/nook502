@@ -356,6 +356,17 @@ const currentStatus: ProductStatus = initial.status ?? "draft";
     border: 1.6px solid var(--color-ink);
     border-radius: 8px;
     box-shadow: var(--shadow-hard-sm);
+    transition:
+      border-color 80ms ease,
+      box-shadow 80ms ease;
+  }
+
+  .field input[type="text"]:focus-visible,
+  .field input[type="number"]:focus-visible,
+  .field textarea:focus-visible,
+  .field select:focus-visible {
+    border-color: var(--color-primary);
+    box-shadow: 2px 2px 0 0 var(--color-primary);
     outline: none;
   }
 
@@ -373,6 +384,11 @@ const currentStatus: ProductStatus = initial.status ?? "draft";
   .select-wrap select {
     appearance: none;
     padding-right: 30px;
+    cursor: pointer;
+  }
+
+  .select-wrap:has(select:focus-visible) .caret {
+    color: var(--color-primary);
   }
 
   .caret {
@@ -384,11 +400,25 @@ const currentStatus: ProductStatus = initial.status ?? "draft";
     height: 14px;
     stroke-width: 2.2;
     pointer-events: none;
+    transition: color 80ms ease;
   }
 
   .price-row {
     display: flex;
     align-items: stretch;
+    background: var(--color-card);
+    border: 1.6px solid var(--color-ink);
+    border-radius: 8px;
+    box-shadow: var(--shadow-hard-sm);
+    overflow: hidden;
+    transition:
+      border-color 80ms ease,
+      box-shadow 80ms ease;
+  }
+
+  .price-row:has(input:focus-visible) {
+    border-color: var(--color-primary);
+    box-shadow: 2px 2px 0 0 var(--color-primary);
   }
 
   .yen {
@@ -398,17 +428,20 @@ const currentStatus: ProductStatus = initial.status ?? "draft";
     width: 44px;
     background: var(--color-primary-soft);
     color: var(--color-primary);
-    border: 1.6px solid var(--color-ink);
-    border-right: none;
-    border-radius: 8px 0 0 8px;
+    border-right: 1.6px solid var(--color-ink);
     font-weight: 900;
     font-size: 18px;
-    box-shadow: var(--shadow-hard-sm);
   }
 
-  .price-row input {
-    border-radius: 0 8px 8px 0;
+  .field .price-row input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
     font-weight: 700;
+    outline: none;
   }
 
   .hint {
