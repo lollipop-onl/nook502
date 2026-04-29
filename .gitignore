@@ -5,6 +5,9 @@ node_modules/
 dist/
 .astro/
 
+# Design handoff bundle (extracted from zip; don't commit)
+.design/
+
 # Cloudflare / Wrangler
 .wrangler/
 .dev.vars
