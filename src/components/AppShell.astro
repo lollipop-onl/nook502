@@ -25,7 +25,9 @@ const { back = false, backHref = "/", title, hideHeader = false } = Astro.props;
             戻る
           </a>
         ) : (
-          <Logo size={24} />
+          <div class="brand">
+            <Logo size={24} />
+          </div>
         )}
         {title && <div class="title">{title}</div>}
         <div class="action">
@@ -80,24 +82,9 @@ const { back = false, backHref = "/", title, hideHeader = false } = Astro.props;
     z-index: 10;
   }
 
-  .shell__header > :global(*:first-child) {
-    justify-self: start;
-  }
-
-  .title {
-    font-size: 14px;
-    font-weight: 700;
-    text-align: center;
-  }
-
-  .action {
-    justify-self: end;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
   .back {
+    grid-column: 1;
+    justify-self: start;
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -115,6 +102,29 @@ const { back = false, backHref = "/", title, hideHeader = false } = Astro.props;
     width: 18px;
     height: 18px;
     stroke-width: 2;
+  }
+
+  .brand {
+    grid-column: 2;
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .title {
+    grid-column: 2;
+    justify-self: center;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .action {
+    grid-column: 3;
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .shell__body {

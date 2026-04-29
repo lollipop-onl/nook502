@@ -52,7 +52,9 @@ const totalPublic = counts.on_sale + counts.reserved + counts.sold;
       )
     }
 
-    <p class="footnote">© 502号室 · 友達同士の小さな譲渡市場</p>
+    <p class="footnote">
+      © Nook 502 ・<a class="admin-link" href="/admin">管理画面</a>
+    </p>
   </AppShell>
 </BaseLayout>
 
@@ -69,5 +71,11 @@ const totalPublic = counts.on_sale + counts.reserved + counts.sold;
     text-align: center;
     font-size: 11px;
     color: var(--color-ink-muted);
+  }
+
+  .admin-link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 </style>
