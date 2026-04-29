@@ -1,7 +1,7 @@
 ---
 import type { AstroComponent } from "@lucide/astro";
 
-interface Props {
+export interface Props {
   icon: AstroComponent;
   ariaLabel: string;
   as?: "button" | "a";
@@ -23,7 +23,7 @@ const {
   size = 36,
   name,
   value,
-} = Astro.props;
+} = Astro.props as Props;
 
 const classes = ["icon-btn", `icon-btn--${kind}`, "press-hard-sm"];
 const styleVar = `--icon-btn-size:${size}px`;
