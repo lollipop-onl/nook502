@@ -1,0 +1,80 @@
+---
+import type { AstroComponent } from "@lucide/astro";
+
+interface Props {
+  icon: AstroComponent;
+  ariaLabel: string;
+  as?: "button" | "a";
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  kind?: "plain" | "primary";
+  size?: number;
+  name?: string;
+  value?: string;
+}
+
+const {
+  icon: Icon,
+  ariaLabel,
+  as = "button",
+  href,
+  type = "button",
+  kind = "plain",
+  size = 36,
+  name,
+  value,
+} = Astro.props;
+
+const classes = ["icon-btn", `icon-btn--${kind}`, "press-hard-sm"];
+const styleVar = `--icon-btn-size:${size}px`;
+---
+
+{
+  as === "a" ? (
+    <a class:list={classes} style={styleVar} href={href} aria-label={ariaLabel}>
+      <Icon class="icon" aria-hidden="true" />
+    </a>
+  ) : (
+    <button
+      class:list={classes}
+      style={styleVar}
+      type={type}
+      aria-label={ariaLabel}
+      name={name}
+      value={value}
+    >
+      <Icon class="icon" aria-hidden="true" />
+    </button>
+  )
+}
+
+<style>
+  .icon-btn {
+    width: var(--icon-btn-size);
+    height: var(--icon-btn-size);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.6px solid var(--color-ink);
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: var(--shadow-hard-md);
+    font-family: inherit;
+  }
+
+  .icon-btn--plain {
+    background: var(--color-card);
+    color: var(--color-ink);
+  }
+
+  .icon-btn--primary {
+    background: var(--color-primary);
+    color: var(--color-card);
+  }
+
+  .icon {
+    width: calc(var(--icon-btn-size) * 0.5);
+    height: calc(var(--icon-btn-size) * 0.5);
+    stroke-width: 2;
+  }
+</style>

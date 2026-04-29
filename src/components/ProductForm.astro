@@ -1,0 +1,419 @@
+---
+import { Check, ChevronDown, Upload, X } from "@lucide/astro";
+import type { ProductImage } from "../lib/products";
+import type { ProductStatus } from "../lib/status";
+import { imageAdminUrl, MAX_IMAGE_BYTES } from "../lib/images";
+import PrimaryButton from "./PrimaryButton.astro";
+import SectionLabel from "./SectionLabel.astro";
+
+interface Props {
+  /** When provided, the form is in edit mode and posts to `/admin/items/{id}`. */
+  productId?: number;
+  initial?: {
+    title?: string;
+    description?: string;
+    price?: number;
+    brand?: string;
+    category?: string;
+    status?: ProductStatus;
+  };
+  images?: ProductImage[];
+  errors?: Partial<Record<"title" | "description" | "price" | "brand" | "category" | "status" | "image", string>>;
+}
+
+const { productId, initial = {}, images = [], errors = {} } = Astro.props;
+const isEdit = typeof productId === "number";
+const action = isEdit ? `/admin/items/${productId}/edit` : "/admin/items/new";
+const maxBytesMb = Math.floor(MAX_IMAGE_BYTES / 1024 / 1024);
+
+const categories = ["家具", "キッチン", "家電", "照明", "雑貨", "アパレル", "その他"];
+const statuses: Array<{ value: ProductStatus; label: string }> = [
+  { value: "draft", label: "下書き" },
+  { value: "private", label: "非公開" },
+  { value: "on_sale", label: "販売中" },
+  { value: "reserved", label: "予約済み" },
+  { value: "sold", label: "売却済み" },
+];
+
+const currentStatus: ProductStatus = initial.status ?? "draft";
+---
+
+{
+  /* Image management lives outside the main product form so we don't nest
+   * forms (HTML disallows it). Each row is its own form that posts to a
+   * dedicated endpoint and redirects back here. */
+}
+{
+  isEdit && (
+    <>
+      <SectionLabel>写真</SectionLabel>
+      <div class="photos">
+        {images.map((img) => (
+          <form
+            method="post"
+            action={`/admin/items/${productId}/images/${img.id}/delete`}
+            class="photo-form"
+            onsubmit="return confirm('この写真を削除しますか？')"
+          >
+            <div class="photo">
+              <img src={imageAdminUrl(img.r2_key)} alt="" loading="lazy" />
+              <button type="submit" class="rm" aria-label="この写真を削除">
+                <X aria-hidden="true" />
+              </button>
+            </div>
+          </form>
+        ))}
+        <form
+          method="post"
+          action={`/admin/items/${productId}/images`}
+          enctype="multipart/form-data"
+          class="add-form"
+        >
+          <label class="add-label bg-stripe">
+            <input
+              type="file"
+              name="image"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              onchange="this.form.submit()"
+              hidden
+            />
+            <Upload aria-hidden="true" />
+            <span>写真を追加</span>
+          </label>
+        </form>
+      </div>
+      {errors.image && <p class="image-err">{errors.image}</p>}
+      <p class="image-help">JPEG / PNG / WebP / AVIF · 各 {maxBytesMb}MB まで</p>
+    </>
+  )
+}
+
+<form id="product-form" method="post" action={action} class="form">
+  <SectionLabel>基本情報</SectionLabel>
+  <div class="fields">
+    <label class="field field--full">
+      <span class="lbl">タイトル<span class="req">●必須</span></span>
+      <input
+        name="title"
+        type="text"
+        required
+        maxlength="120"
+        value={initial.title ?? ""}
+        placeholder="例: IKEA POÄNG アームチェア"
+      />
+      {errors.title && <span class="err">{errors.title}</span>}
+    </label>
+
+    <label class="field">
+      <span class="lbl">ブランド／販売店<span class="req">●必須</span></span>
+      <input
+        name="brand"
+        type="text"
+        required
+        maxlength="80"
+        value={initial.brand ?? ""}
+        placeholder="例: IKEA, 無印良品"
+      />
+      {errors.brand && <span class="err">{errors.brand}</span>}
+    </label>
+
+    <label class="field">
+      <span class="lbl">カテゴリー<span class="req">●必須</span></span>
+      <span class="select-wrap">
+        <select name="category" required>
+          {categories.map((c) => (
+            <option value={c} selected={c === (initial.category ?? "家具")}>{c}</option>
+          ))}
+        </select>
+        <ChevronDown class="caret" aria-hidden="true" />
+      </span>
+    </label>
+
+    <label class="field field--full">
+      <span class="lbl">値段<span class="req">●必須</span></span>
+      <span class="price-row">
+        <span class="yen" aria-hidden="true">¥</span>
+        <input
+          name="price"
+          type="number"
+          inputmode="numeric"
+          min="0"
+          step="100"
+          required
+          value={initial.price != null ? String(initial.price) : ""}
+          placeholder="4500"
+        />
+      </span>
+      {errors.price && <span class="err">{errors.price}</span>}
+    </label>
+  </div>
+
+  <SectionLabel>商品の説明</SectionLabel>
+  <div class="fields fields--single">
+    <label class="field field--full">
+      <span class="lbl">
+        説明文<span class="req">●必須</span>
+      </span>
+      <textarea
+        name="description"
+        rows="6"
+        required
+        maxlength="2000"
+        placeholder="使用感や良いところ、譲る理由などを正直に。"
+      >{initial.description ?? ""}</textarea>
+      <span class="hint">使用感や良いところ、譲る理由などを正直に。</span>
+      {errors.description && <span class="err">{errors.description}</span>}
+    </label>
+  </div>
+
+  <SectionLabel>状態</SectionLabel>
+  <div class="fields fields--single">
+    <label class="field field--full">
+      <span class="lbl">公開ステータス</span>
+      <span class="select-wrap">
+        <select name="status">
+          {statuses.map((s) => (
+            <option value={s.value} selected={s.value === currentStatus}>{s.label}</option>
+          ))}
+        </select>
+        <ChevronDown class="caret" aria-hidden="true" />
+      </span>
+      <span class="hint">「販売中」にすると公開ページに表示されます。</span>
+    </label>
+  </div>
+
+  <div class="form-footer">
+    <PrimaryButton type="submit" kind="primary" icon={Check} full>
+      {isEdit ? "保存する" : "作成する"}
+    </PrimaryButton>
+  </div>
+</form>
+
+<style>
+  .photos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 0 16px;
+  }
+
+  .photo-form {
+    margin: 0;
+  }
+
+  .photo {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border: 1.6px solid var(--color-ink);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--color-paper-deep);
+  }
+
+  .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .rm {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    background: var(--color-card);
+    border: 1.3px solid var(--color-ink);
+    border-radius: 999px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rm svg {
+    width: 12px;
+    height: 12px;
+    stroke-width: 2.4;
+  }
+
+  .add-form {
+    margin: 0;
+  }
+
+  .add-label {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: var(--color-paper-deep);
+    --stripe-color: var(--color-primary);
+    --stripe-opacity: 0.18;
+    --stripe-size: 8px;
+    border: 1.6px dashed var(--color-ink);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--color-ink-soft);
+  }
+
+  .add-label svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.8;
+  }
+
+  .add-label span {
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .image-err {
+    margin: 8px 16px 0;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-danger);
+    background: var(--color-primary-soft);
+    border: 1.4px solid var(--color-danger);
+    border-radius: 8px;
+  }
+
+  .image-help {
+    margin: 6px 16px 0;
+    font-size: 11px;
+    color: var(--color-ink-muted);
+  }
+
+  .form {
+    padding-bottom: 24px;
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 20px;
+  }
+
+  .fields--single {
+    grid-template-columns: 1fr;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field--full {
+    grid-column: span 2;
+  }
+  .fields--single .field--full {
+    grid-column: span 1;
+  }
+
+  .lbl {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--color-ink-soft);
+    text-transform: uppercase;
+  }
+
+  .req {
+    color: var(--color-primary);
+    font-size: 10px;
+  }
+
+  .field input[type="text"],
+  .field input[type="number"],
+  .field textarea,
+  .field select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--color-ink);
+    background: var(--color-card);
+    border: 1.6px solid var(--color-ink);
+    border-radius: 8px;
+    box-shadow: var(--shadow-hard-sm);
+    outline: none;
+  }
+
+  .field textarea {
+    resize: vertical;
+    line-height: 1.7;
+    min-height: 140px;
+  }
+
+  .select-wrap {
+    position: relative;
+    display: block;
+  }
+
+  .select-wrap select {
+    appearance: none;
+    padding-right: 30px;
+  }
+
+  .caret {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    stroke-width: 2.2;
+    pointer-events: none;
+  }
+
+  .price-row {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .yen {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    border: 1.6px solid var(--color-ink);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    font-weight: 900;
+    font-size: 18px;
+    box-shadow: var(--shadow-hard-sm);
+  }
+
+  .price-row input {
+    border-radius: 0 8px 8px 0;
+    font-weight: 700;
+  }
+
+  .hint {
+    font-size: 11px;
+    color: var(--color-ink-muted);
+  }
+
+  .err {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-danger);
+  }
+
+  .form-footer {
+    margin-top: 24px;
+    padding: 0 16px;
+  }
+</style>

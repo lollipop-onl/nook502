@@ -1,0 +1,91 @@
+---
+import type { ProductStatus } from "../lib/status";
+
+type TabId = "all" | "on_sale" | "reserved" | "sold";
+
+interface Props {
+  active: TabId;
+  counts: Record<ProductStatus, number>;
+  basePath?: string;
+}
+
+const { active, counts, basePath = "/" } = Astro.props;
+
+const tabs: Array<{ id: TabId; label: string; count: number }> = [
+  { id: "all", label: "すべて", count: counts.on_sale + counts.reserved + counts.sold },
+  { id: "on_sale", label: "販売中", count: counts.on_sale },
+  { id: "reserved", label: "予約済み", count: counts.reserved },
+  { id: "sold", label: "売却済み", count: counts.sold },
+];
+---
+
+<nav class="tabs" aria-label="ステータスフィルタ">
+  {
+    tabs.map((t) => {
+      const href = t.id === "all" ? basePath : `${basePath}?status=${t.id}`;
+      const isActive = t.id === active;
+      return (
+        <a
+          class:list={["tab", isActive && "tab--active"]}
+          href={href}
+          aria-current={isActive ? "page" : undefined}
+        >
+          <span>{t.label}</span>
+          <span class="count">{t.count}</span>
+        </a>
+      );
+    })
+  }
+</nav>
+
+<style>
+  .tabs {
+    display: flex;
+    gap: 6px;
+    padding: 12px 16px;
+    background: var(--color-paper);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    background: var(--color-card);
+    color: var(--color-ink);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+    box-shadow: var(--shadow-hard-sm);
+    text-decoration: none;
+  }
+
+  .tab--active {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    box-shadow: none;
+  }
+
+  .count {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 1px 6px;
+    background: var(--color-paper-deep);
+    color: var(--color-ink-soft);
+    border-radius: 999px;
+    border: 1px solid var(--color-line-soft);
+  }
+
+  .tab--active .count {
+    background: var(--color-primary);
+    color: var(--color-card);
+    border-color: var(--color-primary);
+  }
+</style>

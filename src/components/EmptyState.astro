@@ -1,0 +1,83 @@
+---
+/* Empty list state — shown on `/` when there are zero public products. */
+---
+
+<div class="empty bg-stripe">
+  <svg
+    width="120"
+    height="100"
+    viewBox="0 0 120 100"
+    fill="none"
+    stroke="var(--color-ink)"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <rect x="20" y="40" width="80" height="50" rx="3" fill="var(--color-card)"></rect>
+    <path d="M20 55 H100"></path>
+    <path d="M30 40 L30 25 L90 25 L90 40"></path>
+    <circle cx="60" cy="32" r="3" fill="var(--color-primary)" stroke="var(--color-ink)"></circle>
+    <path d="M15 20 L15 30 M10 25 L20 25" stroke="var(--color-accent)"></path>
+    <path d="M105 60 L105 68 M101 64 L109 64" stroke="var(--color-secondary)"></path>
+  </svg>
+  <div class="title">まだ商品がありません</div>
+  <div class="copy">
+    管理人が新しい商品を追加すると、ここに並びます。<br />
+    少し時間を空けてのぞいてみてください。
+  </div>
+</div>
+
+<div class="hint">
+  💡 通知を受け取りたい場合は、管理人にLINEで「Nookに新着あったら教えて」と送ってください。
+</div>
+
+<style>
+  .empty {
+    margin: 8px 16px 16px;
+    padding: 40px 24px;
+    background-color: var(--color-card);
+    --stripe-color: var(--color-primary);
+    --stripe-opacity: 0.14;
+    --stripe-size: 9px;
+    border: 1.6px solid var(--color-ink);
+    border-radius: 14px;
+    box-shadow: var(--shadow-hard-lg);
+    text-align: center;
+  }
+
+  svg {
+    display: block;
+    margin: 0 auto 14px;
+  }
+
+  .title {
+    font-size: 17px;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  .copy {
+    font-size: 13px;
+    color: var(--color-ink-soft);
+    line-height: 1.6;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+
+  .hint {
+    margin: 0 16px 24px;
+    padding: 14px;
+    background-color: var(--color-primary-soft);
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgb(from var(--color-primary) r g b / 0.08) 0 1.2px,
+      transparent 1.2px 7px
+    );
+    border: 1.5px dashed var(--color-ink);
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--color-ink);
+  }
+</style>
