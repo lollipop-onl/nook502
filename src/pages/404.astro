@@ -1,0 +1,100 @@
+---
+import { House } from "@lucide/astro";
+import AppShell from "../components/AppShell.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PrimaryButton from "../components/PrimaryButton.astro";
+---
+
+<BaseLayout title="ページが見つかりません — Nook 502">
+  <AppShell>
+    <div class="wrap bg-stripe">
+      <div class="num-stack" aria-hidden="true">
+        <span class="num num--shadow">404</span>
+        <span class="num num--outline">404</span>
+      </div>
+
+      <div class="card">
+        <div class="title">このページは見つかりません</div>
+        <p class="copy">
+          お探しの商品は売却済みになったか、URLが変わっている可能性があります。
+        </p>
+      </div>
+
+      <div class="cta">
+        <PrimaryButton as="a" href="/" kind="primary" icon={House}>
+          一覧に戻る
+        </PrimaryButton>
+      </div>
+    </div>
+  </AppShell>
+</BaseLayout>
+
+<style>
+  .wrap {
+    min-height: calc(100dvh - 53px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    text-align: center;
+    background: var(--color-paper);
+    --stripe-color: var(--color-primary);
+    --stripe-opacity: 0.06;
+    --stripe-size: 12px;
+  }
+
+  .num-stack {
+    position: relative;
+    margin-bottom: 24px;
+    height: 96px;
+    width: 200px;
+  }
+
+  .num {
+    position: absolute;
+    inset: 0;
+    font-size: 96px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -4px;
+    text-align: center;
+  }
+
+  .num--shadow {
+    color: var(--color-primary);
+    transform: translate(4px, 4px);
+    z-index: -1;
+  }
+
+  .num--outline {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--color-ink);
+  }
+
+  .card {
+    padding: 14px 18px;
+    background: var(--color-card);
+    border: 1.6px solid var(--color-ink);
+    border-radius: 12px;
+    box-shadow: var(--shadow-hard-lg);
+    max-width: 320px;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  .copy {
+    margin: 0;
+    font-size: 12px;
+    color: var(--color-ink-soft);
+    line-height: 1.7;
+  }
+
+  .cta {
+    margin-top: 24px;
+  }
+</style>

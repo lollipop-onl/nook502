@@ -1,39 +1,73 @@
 ---
-import { Cloud, Rocket, Sparkles } from "@lucide/astro";
-import "../styles/global.css";
+import AppShell from "../components/AppShell.astro";
+import HeroBand from "../components/HeroBand.astro";
+import ItemCard from "../components/ItemCard.astro";
+import StatusTabs from "../components/StatusTabs.astro";
+import EmptyState from "../components/EmptyState.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { countByStatus, listProductsWithCover } from "../lib/products";
+import { isProductStatus, type ProductStatus } from "../lib/status";
 
-const greeting = "Hello, Astro on Cloudflare Workers!";
+const url = new URL(Astro.request.url);
+const statusParam = url.searchParams.get("status");
+
+let active: "all" | ProductStatus = "all";
+if (
+  statusParam &&
+  isProductStatus(statusParam) &&
+  (statusParam === "on_sale" || statusParam === "reserved" || statusParam === "sold")
+) {
+  active = statusParam;
+}
+
+const db = Astro.locals.runtime.env.DB;
+const [items, counts] = await Promise.all([
+  listProductsWithCover(db, {
+    publicOnly: active === "all",
+    status: active === "all" ? undefined : active,
+  }),
+  countByStatus(db, { publicOnly: true }),
+]);
+
+const totalPublic = counts.on_sale + counts.reserved + counts.sold;
 ---
 
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>nook502</title>
-  </head>
-  <body class="min-h-dvh bg-slate-50 text-slate-900 antialiased">
-    <main class="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-16">
-      <h1 class="flex items-center gap-3 text-3xl font-bold tracking-tight">
-        <Sparkles class="size-8 text-amber-500" aria-hidden="true" />
-        {greeting}
-      </h1>
-      <p class="text-base text-slate-600">
-        Powered by Astro + Cloudflare Workers + Biome + Lefthook.
-      </p>
-      <ul class="grid gap-3 text-sm text-slate-700">
-        <li class="flex items-center gap-2">
-          <Rocket class="size-4 text-sky-600" aria-hidden="true" />
-          Tailwind CSS v4 (Vite plugin)
-        </li>
-        <li class="flex items-center gap-2">
-          <Cloud class="size-4 text-sky-600" aria-hidden="true" />
-          Lightning CSS transformer + minifier
-        </li>
-        <li class="flex items-center gap-2">
-          <Sparkles class="size-4 text-sky-600" aria-hidden="true" />
-          Lucide Astro icons
-        </li>
-      </ul>
-    </main>
-  </body>
-</html>
+<BaseLayout
+  title="Nook 502 — 502号室のちいさな市場"
+  description="友達と、暮らしのお下がり。Nook 502は知り合い向けの不要物譲渡フリマです。"
+>
+  <AppShell>
+    <HeroBand count={totalPublic} />
+    <StatusTabs active={active} counts={counts} />
+
+    {
+      items.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <div class="grid">
+          {items.map((item, i) => (
+            <ItemCard item={item} hero={i === 0} />
+          ))}
+        </div>
+      )
+    }
+
+    <p class="footnote">© 502号室 · 友達同士の小さな譲渡市場</p>
+  </AppShell>
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 4px 16px 24px;
+  }
+
+  .footnote {
+    margin: 12px 16px 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--color-ink-muted);
+  }
+</style>
