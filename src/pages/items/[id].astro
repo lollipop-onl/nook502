@@ -117,7 +117,7 @@ const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(lineMessage)}
     </div>
   </AppShell>
 
-  <script lang="ts" define:vars={{ message: lineMessage }}>
+  <script is:inline define:vars={{ message: lineMessage }}>
     document.querySelector("[data-copy-trigger]")?.addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(message);
