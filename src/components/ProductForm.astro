@@ -74,7 +74,7 @@ const currentStatus: ProductStatus = initial.status ?? "draft";
               type="file"
               name="image"
               accept="image/jpeg,image/png,image/webp,image/avif"
-              onchange="this.form.submit()"
+              data-autosubmit
               hidden
             />
             <Upload aria-hidden="true" />
@@ -188,6 +188,16 @@ const currentStatus: ProductStatus = initial.status ?? "draft";
     </PrimaryButton>
   </div>
 </form>
+
+<script>
+  // Auto-submit the parent form when a file input gains a selection.
+  for (const el of document.querySelectorAll("input[type=file][data-autosubmit]")) {
+    el.addEventListener("change", (e) => {
+      const input = e.currentTarget as HTMLInputElement;
+      input.form?.submit();
+    });
+  }
+</script>
 
 <style>
   .photos {
