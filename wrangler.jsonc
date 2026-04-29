@@ -30,7 +30,7 @@
       "bucket_name": "nook502-images"
     }
   ]
-  // Cloudflare Access は binding 不要。
-  // ダッシュボードで `/admin/*` を Self-hosted Application として登録し、
-  // Worker 側は Cf-Access-Jwt-Assertion ヘッダの JWT を必要に応じて検証する。
+  // Cloudflare Access は binding 不要。Zero Trust ダッシュボードで
+  // `/admin*` を Self-hosted Application として登録し、認可は Access に一任する。
+  // Origin には `Cf-Access-Authenticated-User-Email` ヘッダが付与される。
 }

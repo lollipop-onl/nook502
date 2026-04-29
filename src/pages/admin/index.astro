@@ -24,6 +24,8 @@ const stats = [
 const url = new URL(Astro.request.url);
 const flash = url.searchParams.get("flash");
 
+const accessEmail = Astro.request.headers.get("cf-access-authenticated-user-email") ?? "";
+
 function formatDate(epochSeconds: number): string {
   const d = new Date(epochSeconds * 1000);
   return `${d.getMonth() + 1}/${d.getDate()}`;
@@ -41,9 +43,9 @@ function formatDate(epochSeconds: number): string {
           <div class="eyebrow">Admin · 502</div>
           <h1 class="h1">管理ダッシュボード</h1>
         </div>
-        <span class="cf-pill" title={Astro.locals.access?.email ?? ""}>
+        <span class="cf-pill" title={accessEmail}>
           <span class="dot" aria-hidden="true"></span>
-          {Astro.locals.access?.dev ? "DEV" : "CF Access"}
+          CF Access
         </span>
       </div>
 
