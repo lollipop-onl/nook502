@@ -1,1 +1,126 @@
 @import "tailwindcss";
+
+/*
+ * Nook 502 — Design tokens
+ * Red-led palette on cream paper background.
+ * 詳細は .design/nook-502/project/production/tokens.jsx を参照。
+ */
+@theme {
+  /* Brand (red-led) */
+  --color-primary: #c8362e;
+  --color-primary-deep: #8e1f19;
+  --color-primary-soft: #f5dcd8;
+  --color-secondary: #3f4a8a;
+  --color-accent: #7aa3c2;
+
+  /* Status */
+  --color-success: #4a6b3a;
+  --color-warning: #c58a2a;
+  --color-danger: #8e1f19;
+
+  /* Neutrals — paper-like cream + warm ink */
+  --color-paper: #f4efe6;
+  --color-paper-deep: #eae3d6;
+  --color-card: #fbf8f1;
+  --color-ink: #1f1b17;
+  --color-ink-soft: #5b544b;
+  --color-ink-muted: #8a8278;
+  --color-line-soft: #d9d0be;
+
+  /* Type */
+  --font-display: "Zen Kaku Gothic Antique", system-ui, sans-serif;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  /* Hard shadows — retro print feel */
+  --shadow-hard-sm: 2px 2px 0 0 var(--color-ink);
+  --shadow-hard-md: 3px 3px 0 0 var(--color-ink);
+  --shadow-hard-lg: 4px 4px 0 0 var(--color-ink);
+}
+
+/* Global resets / base */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  /* very subtle warm grain — flattens screenshot moiré */
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='transparent' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Focus ring — keep accessible without breaking the retro look */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+button {
+  font-family: inherit;
+}
+
+/*
+ * Stripe pattern — diagonal hatch evoking risograph print.
+ * Drive color/opacity/size via custom properties so a single class works
+ * everywhere. Defaults fall back to ink at 12% / 8px.
+ *   <div class="bg-stripe" style="--stripe-color: var(--color-primary); --stripe-opacity: 0.18">
+ */
+.bg-stripe {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgb(from var(--stripe-color, var(--color-ink)) r g b / var(--stripe-opacity, 0.12)) 0 1.2px,
+    transparent 1.2px var(--stripe-size, 8px)
+  );
+}
+
+/*
+ * Hard "press" interaction. On :active the element shifts down-right and
+ * the shadow disappears, mimicking a physical press. Pure CSS, no JS.
+ */
+.press-hard {
+  transition:
+    transform 60ms ease,
+    box-shadow 60ms ease;
+}
+.press-hard:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.press-hard-sm {
+  transition:
+    transform 60ms ease,
+    box-shadow 60ms ease;
+}
+.press-hard-sm:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+/*
+ * Photo strip — horizontal scroll snap for the L2 gallery.
+ */
+.photo-strip {
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.photo-strip > * {
+  scroll-snap-align: center;
+}
+.photo-strip::-webkit-scrollbar {
+  display: none;
+}
