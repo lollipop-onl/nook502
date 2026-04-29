@@ -57,6 +57,12 @@ nook502/
 - **Imports**: Biome の `organizeImports` で自動整理
 - **`.astro` は Biome 対象外**: template 内の `{var}` 参照を解析できず誤検知するため除外。必要なら `prettier-plugin-astro` を別途導入
 
+## Design Principles
+
+- **クライアントサイド JS は最小化**: React / Vue / Svelte 等の UI フレームワークは導入しない。Astro の島アーキテクチャは活かすが、原則 zero-JS 出力を目指し、必要な場合のみ素の `<script>` でピンポイントに記述する。
+- **モダンブラウザ前提**: 直近 2 バージョンの Chrome / Edge / Firefox / Safari をターゲットとし、polyfill や IE 互換コードは書かない。Baseline newly available 程度の CSS / JS API は積極的に使ってよい。
+- **インタラクションは CSS ファースト**: アクセシビリティを損なわない範囲で、JS ではなく CSS で実現する。例: `scroll-snap-type` / `scroll-padding`、`scrollbar-color` / `scrollbar-width` / `::-webkit-scrollbar`、`:has()`、`@scope`、`view-transition-name`、`anchor positioning`、`details/summary`、`popover` 属性、`@starting-style`、CSS-only carousels（`scroll-marker-group`）など。フォーカス管理・キーボード操作・スクリーンリーダー対応に問題が出る場合のみ JS を補助的に使う。
+
 ## Git Workflow
 
 - コミットメッセージは `.claude/rules/git-commit.md` の **Conventional Commits** ルールに従う
