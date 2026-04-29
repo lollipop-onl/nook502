@@ -51,12 +51,20 @@ const { back = false, backHref = "/", title, hideHeader = false } = Astro.props;
 <style>
   .shell {
     width: 100%;
+    max-width: 48rem; /* matches Tailwind v4 `screen-md` */
+    margin-inline: auto;
     min-height: 100dvh;
     background: var(--color-paper);
     color: var(--color-ink);
     display: flex;
     flex-direction: column;
     font-family: var(--font-display);
+  }
+
+  @media (min-width: 48rem) {
+    .shell {
+      border-inline: 1.6px solid var(--color-ink);
+    }
   }
 
   .shell__header {

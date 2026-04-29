@@ -58,6 +58,24 @@ body {
   background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='transparent' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/*
+ * On wider viewports the AppShell is constrained to 48rem and centered.
+ * Fill the surrounding gutter with the diagonal hatch so the page feels
+ * framed, not floating. Stripes layer on top of the warm grain.
+ */
+@media (min-width: 48rem) {
+  body {
+    background-color: var(--color-paper-deep);
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        rgb(from var(--color-ink) r g b / 0.12) 0 1.2px,
+        transparent 1.2px 8px
+      ),
+      url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='transparent' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
 * {
   box-sizing: border-box;
 }
