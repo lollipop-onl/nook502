@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.astro/
+
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars
+worker-configuration.d.ts
+.dry-run-output/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*

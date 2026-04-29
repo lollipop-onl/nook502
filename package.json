@@ -1,0 +1,40 @@
+{
+  "name": "nook502",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/postbuild.mjs",
+    "preview": "pnpm build && wrangler dev",
+    "deploy": "pnpm build && wrangler deploy",
+    "astro": "astro",
+    "typecheck": "astro check",
+    "lint": "biome check",
+    "format": "biome format --write",
+    "fix": "biome check --write",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.6.13",
+    "astro": "^5.18.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@biomejs/biome": "^2.2.4",
+    "@types/node": "^25.6.0",
+    "lefthook": "^1.10.0",
+    "typescript": "^5.7.0",
+    "wrangler": "^4.10.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "lefthook",
+      "sharp",
+      "workerd"
+    ]
+  }
+}
