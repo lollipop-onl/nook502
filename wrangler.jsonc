@@ -10,5 +10,27 @@
   },
   "observability": {
     "enabled": true
-  }
+  },
+  // 商品情報（name / price / status / 画像キー など関係データ）
+  // 初回セットアップ: `pnpm wrangler d1 create nook502` を実行し、
+  // 出力された database_id を下に貼る → `pnpm cf-typegen` で型反映。
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nook502",
+      "database_id": ""
+    }
+  ],
+  // 商品画像。View 側は public custom domain から直配信、
+  // 管理画面からのアップロードは Worker 経由で put する想定。
+  // 初回セットアップ: `pnpm wrangler r2 bucket create nook502-images`
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "nook502-images"
+    }
+  ]
+  // Cloudflare Access は binding 不要。
+  // ダッシュボードで `/admin/*` を Self-hosted Application として登録し、
+  // Worker 側は Cf-Access-Jwt-Assertion ヘッダの JWT を必要に応じて検証する。
 }
