@@ -25,6 +25,9 @@ const BRAND_MAX = 80;
 const DESC_MAX = 2000;
 const CATEGORY_MAX = 40;
 const PRICE_MAX = 9_999_999;
+const SIZE_MAX = 80;
+const CONDITION_MAX = 200;
+const PURCHASE_PERIOD_MAX = 40;
 
 export function parseProductForm(form: FormData): ValidateOk | ValidateErr {
   const errors: FieldErrors = {};
@@ -34,6 +37,9 @@ export function parseProductForm(form: FormData): ValidateOk | ValidateErr {
   const description = (form.get("description") ?? "").toString().trim();
   const priceRaw = (form.get("price") ?? "").toString().trim();
   const statusRaw = (form.get("status") ?? "").toString().trim();
+  const sizeRaw = (form.get("size") ?? "").toString().trim();
+  const conditionRaw = (form.get("condition") ?? "").toString().trim();
+  const purchasePeriodRaw = (form.get("purchase_period") ?? "").toString().trim();
 
   if (!title) errors.title = "タイトルを入力してください。";
   else if (title.length > TITLE_MAX)
@@ -69,6 +75,16 @@ export function parseProductForm(form: FormData): ValidateOk | ValidateErr {
     errors.status = "公開ステータスが不正です。";
   }
 
+  if (sizeRaw.length > SIZE_MAX) errors.size = `サイズは ${SIZE_MAX} 文字以内で入力してください。`;
+  if (conditionRaw.length > CONDITION_MAX)
+    errors.condition = `状態は ${CONDITION_MAX} 文字以内で入力してください。`;
+  if (purchasePeriodRaw.length > PURCHASE_PERIOD_MAX)
+    errors.purchase_period = `購入時期は ${PURCHASE_PERIOD_MAX} 文字以内で入力してください。`;
+
+  const size = sizeRaw || null;
+  const condition = conditionRaw || null;
+  const purchase_period = purchasePeriodRaw || null;
+
   if (Object.keys(errors).length > 0) {
     return {
       ok: false,
@@ -79,6 +95,9 @@ export function parseProductForm(form: FormData): ValidateOk | ValidateErr {
         category,
         description,
         price: Number.isFinite(price) ? price : undefined,
+        size,
+        condition,
+        purchase_period,
         status,
       },
     };
@@ -86,6 +105,16 @@ export function parseProductForm(form: FormData): ValidateOk | ValidateErr {
 
   return {
     ok: true,
-    value: { title, description, price, brand, category, status },
+    value: {
+      title,
+      description,
+      price,
+      brand,
+      category,
+      size,
+      condition,
+      purchase_period,
+      status,
+    },
   };
 }

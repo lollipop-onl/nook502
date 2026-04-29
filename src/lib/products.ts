@@ -24,6 +24,9 @@ export interface Product {
   price: number;
   brand: string;
   category: string;
+  size: string | null;
+  condition: string | null;
+  purchase_period: string | null;
   status: ProductStatus;
   published_at: number | null;
   created_at: number;
@@ -41,6 +44,9 @@ interface ProductRow {
   price: number;
   brand: string;
   category: string;
+  size: string | null;
+  condition: string | null;
+  purchase_period: string | null;
   status: string;
   published_at: number | null;
   created_at: number;
@@ -67,6 +73,9 @@ function rowToProduct(row: ProductRow): Product {
     price: row.price,
     brand: row.brand,
     category: row.category,
+    size: row.size,
+    condition: row.condition,
+    purchase_period: row.purchase_period,
     status: row.status,
     published_at: row.published_at,
     created_at: row.created_at,
@@ -75,7 +84,7 @@ function rowToProduct(row: ProductRow): Product {
 }
 
 const SELECT_PRODUCT =
-  "SELECT id, title, description, price, brand, category, status, published_at, created_at, updated_at FROM products";
+  "SELECT id, title, description, price, brand, category, size, condition, purchase_period, status, published_at, created_at, updated_at FROM products";
 
 const SELECT_IMAGE = "SELECT id, product_id, r2_key, width, height, position FROM product_images";
 
@@ -191,6 +200,9 @@ export interface ProductInput {
   price: number;
   brand: string;
   category: string;
+  size: string | null;
+  condition: string | null;
+  purchase_period: string | null;
   status: ProductStatus;
 }
 
@@ -200,8 +212,8 @@ export async function createProduct(db: D1Database, input: ProductInput): Promis
 
   const res = await db
     .prepare(
-      `INSERT INTO products (title, description, price, brand, category, status, published_at, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `INSERT INTO products (title, description, price, brand, category, size, condition, purchase_period, status, published_at, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        RETURNING id`,
     )
     .bind(
@@ -210,6 +222,9 @@ export async function createProduct(db: D1Database, input: ProductInput): Promis
       input.price,
       input.brand,
       input.category,
+      input.size,
+      input.condition,
+      input.purchase_period,
       input.status,
       publishedAt,
       now,
@@ -230,7 +245,8 @@ export async function updateProduct(
   await db
     .prepare(
       `UPDATE products
-       SET title = ?, description = ?, price = ?, brand = ?, category = ?, status = ?,
+       SET title = ?, description = ?, price = ?, brand = ?, category = ?,
+           size = ?, condition = ?, purchase_period = ?, status = ?,
            published_at = COALESCE(published_at, CASE WHEN ? THEN ? ELSE NULL END),
            updated_at = ?
        WHERE id = ?`,
@@ -241,6 +257,9 @@ export async function updateProduct(
       input.price,
       input.brand,
       input.category,
+      input.size,
+      input.condition,
+      input.purchase_period,
       input.status,
       isPublic(input.status) ? 1 : 0,
       now,

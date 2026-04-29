@@ -1,5 +1,5 @@
 ---
-import { Copy, Link as LinkIcon } from "@lucide/astro";
+import { Copy } from "@lucide/astro";
 import AppShell from "../../components/AppShell.astro";
 import PrimaryButton from "../../components/PrimaryButton.astro";
 import PriceTag from "../../components/PriceTag.astro";
@@ -30,7 +30,6 @@ const photos = product.images;
 const hasPhotos = photos.length > 0;
 
 const lineMessage = `[Nook 502] ${product.title} (¥${product.price.toLocaleString("ja-JP")}) について連絡したいです。\n${Astro.url.origin}/items/${product.id}`;
-const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(lineMessage)}`;
 ---
 
 <BaseLayout title={`${product.title} — Nook 502`} description={product.description.slice(0, 120)}>
@@ -121,11 +120,7 @@ const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(lineMessage)}
         </PrimaryButton>
         <span class="toast" data-copy-toast>コピー済み</span>
       </div>
-      <div class="grow">
-        <PrimaryButton as="a" href={lineUrl} kind="primary" icon={LinkIcon} full>
-          LINEで連絡する
-        </PrimaryButton>
-      </div>
+      <p class="contact-note">管理人までお問い合わせください</p>
     </div>
   </AppShell>
 
@@ -339,8 +334,14 @@ const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(lineMessage)}
     position: relative;
   }
 
-  .footer-row .grow {
+  .contact-note {
     flex: 1;
+    margin: 0;
+    align-self: center;
+    font-size: 12px;
+    color: var(--color-ink-soft);
+    text-align: center;
+    line-height: 1.5;
   }
 
   .toast {

@@ -15,10 +15,27 @@ interface Props {
     price?: number;
     brand?: string;
     category?: string;
+    size?: string | null;
+    condition?: string | null;
+    purchase_period?: string | null;
     status?: ProductStatus;
   };
   images?: ProductImage[];
-  errors?: Partial<Record<"title" | "description" | "price" | "brand" | "category" | "status" | "image", string>>;
+  errors?: Partial<
+    Record<
+      | "title"
+      | "description"
+      | "price"
+      | "brand"
+      | "category"
+      | "size"
+      | "condition"
+      | "purchase_period"
+      | "status"
+      | "image",
+      string
+    >
+  >;
 }
 
 const { productId, initial = {}, images = [], errors = {} } = Astro.props;
@@ -163,6 +180,47 @@ const currentStatus: ProductStatus = initial.status ?? "draft";
       >{initial.description ?? ""}</textarea>
       <span class="hint">使用感や良いところ、譲る理由などを正直に。</span>
       {errors.description && <span class="err">{errors.description}</span>}
+    </label>
+  </div>
+
+  <SectionLabel>商品の情報</SectionLabel>
+  <div class="fields">
+    <label class="field field--full">
+      <span class="lbl">サイズ</span>
+      <input
+        name="size"
+        type="text"
+        maxlength="80"
+        value={initial.size ?? ""}
+        placeholder="例: W68 × D82 × H100 cm"
+      />
+      <span class="hint">空欄でも OK。寸法・容量・サイズ表記など自由記入。</span>
+      {errors.size && <span class="err">{errors.size}</span>}
+    </label>
+
+    <label class="field field--full">
+      <span class="lbl">状態</span>
+      <input
+        name="condition"
+        type="text"
+        maxlength="200"
+        value={initial.condition ?? ""}
+        placeholder="例: 使用感あり（座面に小さな擦れ）"
+      />
+      <span class="hint">傷・汚れ・使用感など、買い手に伝えたいこと。</span>
+      {errors.condition && <span class="err">{errors.condition}</span>}
+    </label>
+
+    <label class="field field--full">
+      <span class="lbl">購入時期</span>
+      <input
+        name="purchase_period"
+        type="text"
+        maxlength="40"
+        value={initial.purchase_period ?? ""}
+        placeholder="例: 2022年春 / 不明なら空欄"
+      />
+      {errors.purchase_period && <span class="err">{errors.purchase_period}</span>}
     </label>
   </div>
 
