@@ -12,10 +12,16 @@
       "!**/dist",
       "!**/.astro",
       "!**/.wrangler",
+      "!**/.design",
       "!**/pnpm-lock.yaml",
       "!**/worker-configuration.d.ts",
       "!**/*.astro"
     ]
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
   },
   "formatter": {
     "enabled": true,
