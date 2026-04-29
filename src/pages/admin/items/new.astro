@@ -1,0 +1,31 @@
+---
+import AppShell from "../../../components/AppShell.astro";
+import ProductForm from "../../../components/ProductForm.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { createProduct } from "../../../lib/products";
+import { parseProductForm } from "../../../lib/validate";
+
+let errors: Parameters<typeof ProductForm>[0]["errors"];
+let partial: Parameters<typeof ProductForm>[0]["initial"] = {};
+
+if (Astro.request.method === "POST") {
+  const form = await Astro.request.formData();
+  const parsed = parseProductForm(form);
+  if (parsed.ok) {
+    const newId = await createProduct(Astro.locals.runtime.env.DB, parsed.value);
+    return Astro.redirect(
+      `/admin/items/${newId}/edit?flash=${encodeURIComponent(
+        "商品を作成しました。写真を追加できます。",
+      )}`,
+      303,
+    );
+  }
+  errors = parsed.errors;
+  partial = parsed.partial;
+}
+---
+
+<BaseLayout title="新しい商品 — Nook 502">
+  <AppShell back backHref="/admin" title="新しい商品" />
+  <ProductForm initial={partial} errors={errors} />
+</BaseLayout>

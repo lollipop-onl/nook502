@@ -1,0 +1,320 @@
+---
+import { Bell, Camera, Plus } from "@lucide/astro";
+import AppShell from "../../components/AppShell.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import IconButton from "../../components/IconButton.astro";
+import PrimaryButton from "../../components/PrimaryButton.astro";
+import StatusDropdown from "../../components/StatusDropdown.astro";
+import { countByStatus, listProductsWithCover } from "../../lib/products";
+import { imageAdminUrl } from "../../lib/images";
+
+const db = Astro.locals.runtime.env.DB;
+const [items, counts] = await Promise.all([
+  listProductsWithCover(db),
+  countByStatus(db),
+]);
+
+const stats = [
+  { label: "販売中", value: counts.on_sale, color: "var(--color-success)" },
+  { label: "予約済み", value: counts.reserved, color: "var(--color-warning)" },
+  { label: "下書き", value: counts.draft, color: "var(--color-ink-muted)" },
+  { label: "売却済み", value: counts.sold, color: "var(--color-ink-soft)" },
+];
+
+const url = new URL(Astro.request.url);
+const flash = url.searchParams.get("flash");
+
+function formatDate(epochSeconds: number): string {
+  const d = new Date(epochSeconds * 1000);
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+---
+
+<BaseLayout title="管理ダッシュボード — Nook 502">
+  <AppShell>
+    <IconButton slot="header-action" icon={Bell} ariaLabel="通知" />
+
+    <!-- Stats header -->
+    <div class="stats-block bg-stripe">
+      <div class="head-row">
+        <div>
+          <div class="eyebrow">Admin · 502</div>
+          <h1 class="h1">管理ダッシュボード</h1>
+        </div>
+        <span class="cf-pill" title={Astro.locals.access?.email ?? ""}>
+          <span class="dot" aria-hidden="true"></span>
+          {Astro.locals.access?.dev ? "DEV" : "CF Access"}
+        </span>
+      </div>
+
+      <div class="stats">
+        {stats.map((s) => (
+          <div class="stat">
+            <div class="stat-v" style={`color:${s.color}`}>{s.value}</div>
+            <div class="stat-l">{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {flash && <div class="flash">{flash}</div>}
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="meta">ステータス順 · {items.length}点</div>
+      <div class="cta">
+        <PrimaryButton as="a" href="/admin/items/new" kind="primary" icon={Plus} size="sm">
+          新しい商品
+        </PrimaryButton>
+      </div>
+    </div>
+
+    <!-- List -->
+    <ul class="list">
+      {items.map((it) => (
+        <li class:list={["row", it.status === "sold" && "row--dim"]}>
+          <a href={`/admin/items/${it.id}/edit`} class="row-thumb" aria-label={`${it.title}を編集`}>
+            {it.cover ? (
+              <img src={imageAdminUrl(it.cover.r2_key)} alt="" loading="lazy" />
+            ) : (
+              <Camera class="thumb-icon" aria-hidden="true" />
+            )}
+          </a>
+          <a href={`/admin/items/${it.id}/edit`} class="row-body">
+            <div class="brand">{it.brand}</div>
+            <div class="title">{it.title}</div>
+            <div class="row-meta">
+              <span class="price">¥{it.price.toLocaleString("ja-JP")}</span>
+              <span class="updated">更新 {formatDate(it.updated_at)}</span>
+            </div>
+          </a>
+          <div class="row-status">
+            <StatusDropdown productId={it.id} current={it.status} />
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    <p class="help">
+      ステータスはドロップダウンから即時変更できます。<br />
+      タイトル・説明・写真の編集は、行をタップして詳細画面から行えます。
+    </p>
+  </AppShell>
+</BaseLayout>
+
+<script lang="ts" is:inline>
+  // Auto-dismiss the flash banner so a refresh doesn't keep showing it.
+  // Pure progressive enhancement — server already cleared via redirect.
+  setTimeout(() => {
+    const f = document.querySelector(".flash");
+    if (f) f.remove();
+  }, 4000);
+</script>
+
+<style>
+  .stats-block {
+    padding: 16px 16px 14px;
+    background-color: var(--color-paper-deep);
+    --stripe-color: var(--color-primary);
+    --stripe-opacity: 0.06;
+    --stripe-size: 10px;
+    border-bottom: 1.6px solid var(--color-ink);
+  }
+
+  .head-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--color-primary);
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .h1 {
+    margin: 4px 0 0;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -0.3px;
+  }
+
+  .cf-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--color-success);
+    background: var(--color-card);
+    border: 1.3px solid var(--color-success);
+    border-radius: 999px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-success);
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  .stat {
+    padding: 8px 6px;
+    background: var(--color-card);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: var(--shadow-hard-sm);
+  }
+
+  .stat-v {
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .stat-l {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--color-ink-soft);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  .flash {
+    margin: 12px 16px 0;
+    padding: 10px 12px;
+    background: var(--color-primary-soft);
+    border: 1.4px solid var(--color-ink);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-primary-deep);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 6px;
+  }
+
+  .meta {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--color-ink-soft);
+    text-transform: uppercase;
+  }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 4px 12px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--color-card);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 10px;
+    box-shadow: var(--shadow-hard-sm);
+  }
+
+  .row--dim {
+    opacity: 0.65;
+  }
+
+  .row-thumb {
+    width: 44px;
+    height: 44px;
+    background-color: var(--color-paper-deep);
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgb(from var(--color-primary) r g b / 0.18) 0 1.2px,
+      transparent 1.2px 6px
+    );
+    border: 1.4px solid var(--color-ink);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .row-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumb-icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 1.8;
+    color: var(--color-ink-soft);
+  }
+
+  .row-body {
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .brand {
+    font-size: 9.5px;
+    letter-spacing: 1px;
+    color: var(--color-primary);
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .title {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .row-meta {
+    font-size: 11px;
+    color: var(--color-ink-muted);
+    margin-top: 3px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .price {
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .help {
+    margin: 4px 16px 24px;
+    font-size: 11px;
+    color: var(--color-ink-muted);
+    line-height: 1.6;
+  }
+</style>

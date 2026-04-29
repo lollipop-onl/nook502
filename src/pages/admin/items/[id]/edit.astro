@@ -1,0 +1,122 @@
+---
+import { Trash2 } from "@lucide/astro";
+import AppShell from "../../../../components/AppShell.astro";
+import ProductForm from "../../../../components/ProductForm.astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import { getProductById } from "../../../../lib/products";
+import { parseProductForm } from "../../../../lib/validate";
+import { updateProduct } from "../../../../lib/products";
+
+const idParam = Astro.params.id ?? "";
+const id = Number(idParam);
+
+if (!Number.isInteger(id) || id <= 0) {
+  return Astro.rewrite("/404");
+}
+
+const db = Astro.locals.runtime.env.DB;
+const product = await getProductById(db, id);
+
+if (!product) {
+  return Astro.rewrite("/404");
+}
+
+let errors: Parameters<typeof ProductForm>[0]["errors"];
+let initial: Parameters<typeof ProductForm>[0]["initial"] = {
+  title: product.title,
+  description: product.description,
+  price: product.price,
+  brand: product.brand,
+  category: product.category,
+  status: product.status,
+};
+
+if (Astro.request.method === "POST") {
+  const form = await Astro.request.formData();
+  const parsed = parseProductForm(form);
+  if (parsed.ok) {
+    await updateProduct(db, id, parsed.value);
+    return Astro.redirect(
+      `/admin/items/${id}/edit?flash=${encodeURIComponent("変更を保存しました。")}`,
+      303,
+    );
+  }
+  errors = parsed.errors;
+  initial = parsed.partial;
+}
+
+const url = new URL(Astro.request.url);
+const flash = url.searchParams.get("flash");
+const imageError = url.searchParams.get("image_error");
+const errorsWithImage = imageError ? { ...errors, image: imageError } : errors;
+---
+
+<BaseLayout title={`${product.title} を編集 — Nook 502`}>
+  <AppShell back backHref="/admin" title="商品を編集">
+    <form
+      slot="header-action"
+      method="post"
+      action={`/admin/items/${id}/delete`}
+      class="del-form"
+      onsubmit="return confirm('この商品を削除しますか？元に戻せません。')"
+    >
+      <button type="submit" class="del-btn" aria-label="商品を削除">
+        <Trash2 aria-hidden="true" />
+        削除
+      </button>
+    </form>
+
+    {flash && <div class="flash">{flash}</div>}
+
+    <ProductForm
+      productId={id}
+      initial={initial}
+      images={product.images}
+      errors={errorsWithImage}
+    />
+  </AppShell>
+</BaseLayout>
+
+<script lang="ts" is:inline>
+  setTimeout(() => {
+    const f = document.querySelector(".flash");
+    if (f) f.remove();
+  }, 4000);
+</script>
+
+<style>
+  .del-form {
+    margin: 0;
+  }
+
+  .del-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-danger);
+    font-family: inherit;
+    padding: 0;
+  }
+
+  .del-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2;
+  }
+
+  .flash {
+    margin: 12px 16px 0;
+    padding: 10px 12px;
+    background: var(--color-primary-soft);
+    border: 1.4px solid var(--color-ink);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-primary-deep);
+  }
+</style>
