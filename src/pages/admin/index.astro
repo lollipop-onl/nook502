@@ -102,12 +102,11 @@ function formatDate(epochSeconds: number): string {
   </AppShell>
 </BaseLayout>
 
-<script lang="ts" is:inline>
+<script>
   // Auto-dismiss the flash banner so a refresh doesn't keep showing it.
   // Pure progressive enhancement — server already cleared via redirect.
   setTimeout(() => {
-    const f = document.querySelector(".flash");
-    if (f) f.remove();
+    document.querySelector(".flash")?.remove();
   }, 4000);
 </script>
 

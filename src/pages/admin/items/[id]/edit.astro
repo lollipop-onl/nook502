@@ -77,10 +77,11 @@ const errorsWithImage = imageError ? { ...errors, image: imageError } : errors;
   </AppShell>
 </BaseLayout>
 
-<script lang="ts" is:inline>
+<script>
+  // Auto-dismiss the flash banner after a few seconds; refreshing keeps
+  // the URL param around so the server is not the right place to clear it.
   setTimeout(() => {
-    const f = document.querySelector(".flash");
-    if (f) f.remove();
+    document.querySelector(".flash")?.remove();
   }, 4000);
 </script>
 
