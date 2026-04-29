@@ -9,6 +9,7 @@ import ProductPhoto from "../../components/ProductPhoto.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getProductById } from "../../lib/products";
 import { imageUrl } from "../../lib/images";
+import { SITE_HANDOVER_TEXT } from "../../lib/site";
 import { isPublicStatus } from "../../lib/status";
 
 const idParam = Astro.params.id ?? "";
@@ -87,6 +88,16 @@ const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(lineMessage)}
     <dl class="meta">
       <div><dt>ブランド／販売店</dt><dd>{product.brand}</dd></div>
       <div><dt>カテゴリー</dt><dd>{product.category}</dd></div>
+      {product.size && (
+        <div><dt>サイズ</dt><dd>{product.size}</dd></div>
+      )}
+      {product.condition && (
+        <div><dt>状態</dt><dd>{product.condition}</dd></div>
+      )}
+      {product.purchase_period && (
+        <div><dt>購入時期</dt><dd>{product.purchase_period}</dd></div>
+      )}
+      <div><dt>受け渡し</dt><dd>{SITE_HANDOVER_TEXT}</dd></div>
     </dl>
 
     <!-- Contact callout -->
@@ -200,10 +211,10 @@ const lineUrl = `https://line.me/R/share?text=${encodeURIComponent(lineMessage)}
     margin-top: 8px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    scroll-padding-inline: 0;
+    scroll-padding-inline: 16px;
     scrollbar-width: none;
-    padding: 2px;
-    margin-inline: -2px;
+    padding: 2px 16px;
+    margin-inline: -16px;
   }
   .thumbs::-webkit-scrollbar {
     display: none;
