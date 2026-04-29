@@ -12,13 +12,11 @@ if (Astro.request.method === "POST") {
   const form = await Astro.request.formData();
   const parsed = parseProductForm(form);
   if (parsed.ok) {
-    const newId = await createProduct(Astro.locals.runtime.env.DB, parsed.value);
-    return Astro.redirect(
-      `/admin/items/${newId}/edit?flash=${encodeURIComponent(
-        "商品を作成しました。写真を追加できます。",
-      )}`,
-      303,
-    );
+    const id = await createProduct(Astro.locals.runtime.env.DB, parsed.value);
+    const flash = encodeURIComponent("商品を作成しました。写真を追加できます。");
+    const target = `/admin/items/${id}/edit?flash=${flash}`;
+    Astro.response.headers.set("Location", target);
+    return new Response(null, { status: 303, headers: Astro.response.headers });
   }
   errors = parsed.errors;
   partial = parsed.partial;
